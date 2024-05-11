@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">JetsnackMe</string>
+
+    <!--bottom nav-->
+    <string name="bottomNav1">HOME</string>
+    <string name="bottomNav2">SEARCH</string>
+    <string name="bottomNav3">MY CART</string>
+    <string name="bottomNav4">PROFILE</string>
+
+<!--    filter choice-->
+    <string name="filter1">Organic</string>
+    <string name="filter2">Gluten-free</string>
+    <string name="filter3">Dairy-free</string>
+    <string name="filter4">Sweet</string>
+    <string name="filter5">Savory</string>
+
+<!--    banner letter-->
+    <string name="banner1">Android\'s picks</string>
+    <string name="banner2">Popular on Jetsnack</string>
+    <string name="banner3">WFH favorites</string>
+    <string name="banner4">Newly Added</string>
+    <string name="banner5">Only on Jetsnack</string>
+</resources>
