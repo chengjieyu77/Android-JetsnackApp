@@ -20,4 +20,32 @@
     <string name="banner3">WFH favorites</string>
     <string name="banner4">Newly Added</string>
     <string name="banner5">Only on Jetsnack</string>
+
+<!--    Filter Dialog -->
+    <string name="filter_banner1">Sort</string>
+    <string name="filter_banner2">Price</string>
+    <string name="filter_banner3">Category</string>
+    <string name="filter_banner4">Max Calories</string>
+    <string name="filter_banner4_subtitle">per serving</string>
+    <string name="filter_banner5">LifeStyle</string>
+
+    <string name="sort1">Android\'s favorite (default)</string>
+    <string name="sort2">Rating</string>
+    <string name="sort3">Alphabetical</string>
+
+    <string name="price1">$</string>
+    <string name="price2">$$</string>
+    <string name="price3">$$$</string>
+    <string name="price4">$$$$</string>
+
+    <string name="category1">Chips \&amp; crackers</string>
+    <string name="category2">Fruit snacks</string>
+    <string name="category3">Desserts</string>
+    <string name="category4">Nuts</string>
+
+    <string name="lifestyle1">Organic</string>
+    <string name="lifestyle2">Gluten-free</string>
+    <string name="lifestyle3">Dairy-free</string>
+    <string name="lifestyle4">Sweet</string>
+    <string name="lifestyle5">Savory</string>
 </resources>
