@@ -7,14 +7,14 @@
     <string name="bottomNav3">MY CART</string>
     <string name="bottomNav4">PROFILE</string>
 
-<!--    filter choice-->
+<!--   Homepage filter choice-->
     <string name="filter1">Organic</string>
     <string name="filter2">Gluten-free</string>
     <string name="filter3">Dairy-free</string>
     <string name="filter4">Sweet</string>
     <string name="filter5">Savory</string>
 
-<!--    banner letter-->
+<!--    Homepage banner letter-->
     <string name="banner1">Android\'s picks</string>
     <string name="banner2">Popular on Jetsnack</string>
     <string name="banner3">WFH favorites</string>
@@ -48,4 +48,11 @@
     <string name="lifestyle3">Dairy-free</string>
     <string name="lifestyle4">Sweet</string>
     <string name="lifestyle5">Savory</string>
+
+<!--    snack detail page-->
+    <string name="details">Details</string>
+    <string name="detailsContent">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="ingredientsContents">Vanilla, Almond Flour, Eggs, Butter, Cream, Sugar</string>
+    <string name="banner6">Customers also bought</string>
 </resources>

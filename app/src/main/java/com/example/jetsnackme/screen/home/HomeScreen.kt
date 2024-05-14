@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -47,6 +46,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -54,9 +54,7 @@ import coil.request.ImageRequest
 import com.example.jetsnackme.R
 import com.example.jetsnackme.components.DeliveryToTopBar
 import com.example.jetsnackme.components.FilterDialog
-import com.example.jetsnackme.data.snacks
 import com.example.jetsnackme.model.Snack
-import com.example.jetsnackme.navigation.JetsnackScreens
 import com.example.jetsnackme.ui.theme.JetsnackMeTheme
 import com.example.jetsnackme.ui.theme.Lavender3
 import com.example.jetsnackme.ui.theme.Rose2
@@ -69,7 +67,8 @@ import com.example.jetsnackme.ui.theme.Typography
 @Composable
 fun HomeScreen(navController: NavController,
                modifier: Modifier = Modifier,
-               viewModel: HomeScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
+               viewModel: HomeScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+               navigateToSnackDetailScreen:(id:String)->Unit){
     val scrollState = rememberScrollState()
     val filterItems = listOf(
         R.string.filter1,
@@ -108,12 +107,12 @@ fun HomeScreen(navController: NavController,
                 isFilterShow = viewModel.isFilterShow)
 
             SectionBanner(label = R.string.banner1)
-            SnackCardRow(modifier = modifier,
-                cardBackgroundColorCollectionPicks= cardBackgroundColorCollectionPicks,
+            SnackCardRow(
+                modifier = modifier,
+                cardBackgroundColorCollectionPicks = cardBackgroundColorCollectionPicks,
                 snacks = viewModel.picksSnacks,
-                colorCount =cardBackgroundColorCollectionPicks.size){
-
-            }
+                colorCount =cardBackgroundColorCollectionPicks.size,
+                onClickToDetail = navigateToSnackDetailScreen)
             Divider()
 
             SectionBanner(label = R.string.banner2)
@@ -121,12 +120,12 @@ fun HomeScreen(navController: NavController,
             Divider()
 
             SectionBanner(label = R.string.banner3)
-            SnackCardRow(modifier = modifier,
-                cardBackgroundColorCollectionPicks= cardBackgroundColorCollectionFavorites,
+            SnackCardRow(
+                modifier = modifier,
+                cardBackgroundColorCollectionPicks = cardBackgroundColorCollectionFavorites,
                 snacks = viewModel.picksSnacks,
-                colorCount =cardBackgroundColorCollectionFavorites.size ){
-
-            }
+                colorCount =cardBackgroundColorCollectionFavorites.size,
+                onClickToDetail = navigateToSnackDetailScreen)
             Divider()
 
             SectionBanner(label = R.string.banner4)
@@ -134,12 +133,12 @@ fun HomeScreen(navController: NavController,
             Divider()
 
             SectionBanner(label = R.string.banner5)
-            SnackCardRow(modifier = modifier,
-                cardBackgroundColorCollectionPicks= cardBackgroundColorCollectionPicks,
+            SnackCardRow(
+                modifier = modifier,
+                cardBackgroundColorCollectionPicks = cardBackgroundColorCollectionPicks,
                 snacks = viewModel.picksSnacks,
-                colorCount =cardBackgroundColorCollectionPicks.size ){
-                
-            }
+                colorCount =cardBackgroundColorCollectionPicks.size ,
+                onClickToDetail = navigateToSnackDetailScreen)
 
         }
    }
@@ -199,7 +198,7 @@ fun SnackCardRow(
     cardBackgroundColorCollectionPicks:List<List<Color>>,
     snacks:List<Snack>,
     colorCount:Int,
-    onClickToDetail: () -> Unit
+    onClickToDetail: (id: String) -> Unit
 ){
     LazyRow(modifier = modifier.padding(top = 8.dp,start = 16.dp,bottom = 16.dp)) {
             items(snacks){snack->
@@ -214,16 +213,16 @@ fun SnackCardRow(
 }
 @Composable
 fun SnackCardItem(modifier: Modifier = Modifier,
-                snack: Snack,
+                  cardSizeModifier:Modifier = Modifier.homeCardSizeModifier(),
+                  snack: Snack,
                   cardBackgroundColor:List<Color>,
-                  onClickToDetail:()->Unit = {}){
-    val cardColoredBackgroundHeight = 100.dp
-    val cardSizeModifier = modifier
-        .width(150.dp)
-        .height(200.dp)
+                  cardColoredBackgroundHeight: Dp = 100.dp,
+                  onClickToDetail:(id:String)->Unit = {}){
+
+
     Box(modifier = cardSizeModifier
         //.background(color = Color.White)
-        .clickable { onClickToDetail.invoke() }){
+        .clickable { onClickToDetail(snack.id.toString()) }){
             Card(
                 modifier = cardSizeModifier
                     .background(color = JetsnackMeTheme.colors.uiBackground)
@@ -340,6 +339,14 @@ fun FilterRow(filterItems:List<Int>,
         }
 
 
+}
+
+@Composable
+fun Modifier.homeCardSizeModifier():Modifier{
+    val homeCardSizeModifier = Modifier
+        .width(150.dp)
+        .height(200.dp)
+    return this then homeCardSizeModifier
 }
 
 @Composable

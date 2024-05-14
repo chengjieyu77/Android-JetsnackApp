@@ -52,6 +52,8 @@ android {
 }
 
 dependencies {
+    //system ui controller
+    //implementation("com.google.accompanist:accompanist-systemuicontroller:x.y.z")
     //bottom navigation
     implementation("androidx.compose.material:material:1.6.7")
     //firebase

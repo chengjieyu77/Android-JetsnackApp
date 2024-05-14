@@ -1,5 +1,6 @@
 package com.example.jetsnackme.navigation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -32,16 +33,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.jetsnackme.R
 import com.example.jetsnackme.model.BottomNav
 import com.example.jetsnackme.screen.CartScreen
 import com.example.jetsnackme.screen.home.HomeScreen
 import com.example.jetsnackme.screen.ProfileScreen
 import com.example.jetsnackme.screen.SearchScreen
+import com.example.jetsnackme.screen.SnackDetail.SnackDetailScreen
 import com.example.jetsnackme.ui.theme.JetsnackMeTheme
 import com.example.jetsnackme.ui.theme.Shapes
 import com.example.jetsnackme.ui.theme.Typography
@@ -78,96 +82,125 @@ fun JetsnackNavigation(){
         )
     val unSelectedNavModifier = Modifier
 
-
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    val isInDetail = currentDestination?.hierarchy?.any { it.route?.contains(JetsnackScreens.SnackDetailScreen.name)
+        ?: false }
+//    if (isInDetail == true){
+//        ChangeStatusBarColor()
+//    }
 
     Scaffold(
-        bottomBar = {
-            BottomNavigation(
-               // modifier = Modifier.navigationBarsPadding(),
-                backgroundColor = JetsnackMeTheme.colors.brand
-            ) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                screensAndIcon.forEach { (screen,bottomNav) ->
-                    val selected = currentDestination?.hierarchy?.any { it.route == screen.name } == true
+            bottomBar = {
+                    if (isInDetail == false){
+                        BottomNavigation(
+                            // modifier = Modifier.navigationBarsPadding(),
+                            backgroundColor = JetsnackMeTheme.colors.brand
+                        ) {
+                            screensAndIcon.forEach { (screen,bottomNav) ->
+                                val selected = currentDestination?.hierarchy?.any { it.route == screen.name } == true
 
-                    BottomNavigationItem(
-                            selected = selected,
-                            icon = {
-                                if (selected){
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                                            .offset(when(screen.name){
-                                                "HomeScreen" -> 10.dp
-                                                "ProfileScreen" -> -10.dp
-                                                else -> 0.dp
-                                            } )
-                                            .then(selectedNavModifierInner),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center) {
-                                        Icon(bottomNav.icon,
-                                            contentDescription = null,
-                                            tint = JetsnackMeTheme.colors.iconInteractive,
-                                            modifier = Modifier.padding(horizontal = 2.dp)
-                                        )
-                                        Text(text = stringResource(bottomNav.label),
-                                            style = Typography.overline,
-                                            color = JetsnackMeTheme.colors.iconInteractive,
-                                        )
+                                BottomNavigationItem(
+                                    selected = selected,
+                                    icon = {
+                                        if (selected){
+                                            Row(
+                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                                    .offset(when(screen.name){
+                                                        "HomeScreen" -> 10.dp
+                                                        "ProfileScreen" -> -10.dp
+                                                        else -> 0.dp
+                                                    } )
+                                                    .then(selectedNavModifierInner),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center) {
+                                                Icon(bottomNav.icon,
+                                                    contentDescription = null,
+                                                    tint = JetsnackMeTheme.colors.iconInteractive,
+                                                    modifier = Modifier.padding(horizontal = 2.dp)
+                                                )
+                                                Text(text = stringResource(bottomNav.label),
+                                                    style = Typography.overline,
+                                                    color = JetsnackMeTheme.colors.iconInteractive,
+                                                )
+                                            }
+
+
+                                        }else{
+                                            Icon(bottomNav.icon,
+                                                contentDescription = null,
+                                                tint = JetsnackMeTheme.colors.iconInteractiveInactive)
+                                        }
+
+                                    },
+
+                                    modifier = Modifier
+                                        .navigationBarsPadding()
+                                        .then(if (selected) selectedNavModifierOuter else unSelectedNavModifier),
+                                    //.width(120.dp)
+                                    //.padding(horizontal = 2.dp),
+                                    alwaysShowLabel = false,
+                                    selectedContentColor = JetsnackMeTheme.colors.iconInteractive,
+                                    unselectedContentColor = JetsnackMeTheme.colors.iconInteractiveInactive,
+
+                                    onClick = {
+                                        navController.navigate(screen.name) {
+                                            // Pop up to the start destination of the graph to
+                                            // avoid building up a large stack of destinations
+                                            // on the back stack as users select items
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            // Avoid multiple copies of the same destination when
+                                            // reselecting the same item
+                                            launchSingleTop = true
+                                            // Restore state when reselecting a previously selected item
+                                            restoreState = true
+                                        }
                                     }
-
-
-                                }else{
-                                    Icon(bottomNav.icon,
-                                        contentDescription = null,
-                                        tint = JetsnackMeTheme.colors.iconInteractiveInactive)
-                                }
-
-                            },
-
-                            modifier = Modifier
-                                .navigationBarsPadding()
-                                .then(if (selected) selectedNavModifierOuter else unSelectedNavModifier),
-                            //.width(120.dp)
-                            //.padding(horizontal = 2.dp),
-                            alwaysShowLabel = false,
-                            selectedContentColor = JetsnackMeTheme.colors.iconInteractive,
-                            unselectedContentColor = JetsnackMeTheme.colors.iconInteractiveInactive,
-
-                            onClick = {
-                                navController.navigate(screen.name) {
-                                    // Pop up to the start destination of the graph to
-                                    // avoid building up a large stack of destinations
-                                    // on the back stack as users select items
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    // Avoid multiple copies of the same destination when
-                                    // reselecting the same item
-                                    launchSingleTop = true
-                                    // Restore state when reselecting a previously selected item
-                                    restoreState = true
-                                }
+                                )
                             }
-                        )
+
+                        }
                     }
 
-                }
 
-        }
+
+
+            }
+
+
     ) { innerPadding ->
         NavHost(navController, startDestination = JetsnackScreens.HomeScreen.name, Modifier.padding(innerPadding)) {
             composable(JetsnackScreens.HomeScreen.name) {
-                HomeScreen(navController = navController)
+                HomeScreen(navController = navController){snackId->
+                    navController.navigate(JetsnackScreens.SnackDetailScreen.name+"/$snackId")
+                }
+                Log.d("current destination",currentDestination.toString()+isInDetail)
             }
             composable(JetsnackScreens.SearchScreen.name) {
                 SearchScreen(navController = navController)
+                Log.d("current destination",currentDestination.toString())
             }
             composable(JetsnackScreens.CartScreen.name) {
                 CartScreen(navController = navController)
+                Log.d("current destination",currentDestination.toString())
             }
             composable(JetsnackScreens.ProfileScreen.name) {
                 ProfileScreen(navController = navController)
+            }
+
+
+            composable(
+                "${JetsnackScreens.SnackDetailScreen.name}/{snackId}",
+                arguments = listOf(navArgument("snackId"){type = NavType.StringType})
+            ) {navBack->
+                navBack.arguments?.getString("snackId").let{
+                    snackId->
+                    SnackDetailScreen(navController = navController,snackId = snackId.toString())
+                }
+                Log.d("current destination",currentDestination.toString()+isInDetail)
+
             }
            
         }
