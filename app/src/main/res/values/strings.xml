@@ -55,4 +55,21 @@
     <string name="ingredients">Ingredients</string>
     <string name="ingredientsContents">Vanilla, Almond Flour, Eggs, Butter, Cream, Sugar</string>
     <string name="banner6">Customers also bought</string>
+
+<!--    search page-->
+    <string name="searchBanner1">Categories</string>
+    <string name="searchBanner2">Lifestyles</string>
+    <string name="searchCategories1">Chips &amp; crackers</string>
+    <string name="searchCategories2">Fruit snacks</string>
+    <string name="searchCategories3">Desserts</string>
+    <string name="searchCategories4">Nuts</string>
+    <string name="searchLifestyles1">Organic</string>
+    <string name="searchLifestyles2">Gluten Free</string>
+    <string name="searchLifestyles3">Paleo</string>
+    <string name="searchLifestyles4">Vegan</string>
+    <string name="searchLifestyles5">Vegitarian</string>
+    <string name="searchLifestyles6">Whole30</string>
+    <string name="searches1">Recent searches</string>
+    <string name="searches2">Popular searches</string>
+
 </resources>

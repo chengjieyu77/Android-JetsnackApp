@@ -1,4 +1,4 @@
-package com.example.jetsnackme.screen.SnackDetail
+package com.example.jetsnackme.screen.snack_detail
 
 import androidx.lifecycle.ViewModel
 import com.example.jetsnackme.data.snacks

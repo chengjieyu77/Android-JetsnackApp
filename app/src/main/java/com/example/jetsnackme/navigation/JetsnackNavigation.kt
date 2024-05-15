@@ -44,8 +44,8 @@ import com.example.jetsnackme.model.BottomNav
 import com.example.jetsnackme.screen.CartScreen
 import com.example.jetsnackme.screen.home.HomeScreen
 import com.example.jetsnackme.screen.ProfileScreen
-import com.example.jetsnackme.screen.SearchScreen
-import com.example.jetsnackme.screen.SnackDetail.SnackDetailScreen
+import com.example.jetsnackme.screen.search.SearchScreen
+import com.example.jetsnackme.screen.snack_detail.SnackDetailScreen
 import com.example.jetsnackme.ui.theme.JetsnackMeTheme
 import com.example.jetsnackme.ui.theme.Shapes
 import com.example.jetsnackme.ui.theme.Typography

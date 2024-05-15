@@ -70,13 +70,6 @@ fun HomeScreen(navController: NavController,
                viewModel: HomeScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
                navigateToSnackDetailScreen:(id:String)->Unit){
     val scrollState = rememberScrollState()
-    val filterItems = listOf(
-        R.string.filter1,
-        R.string.filter2,
-        R.string.filter3,
-        R.string.filter4,
-        R.string.filter5
-    )
 
     val cardBackgroundColorCollectionPicks = listOf(
             JetsnackMeTheme.colors.tornado1,
@@ -103,7 +96,7 @@ fun HomeScreen(navController: NavController,
         Column(modifier = Modifier
             .padding(top = contentPadding.calculateTopPadding())
             .verticalScroll(scrollState)) {
-            FilterRow(filterItems = filterItems,
+            FilterRow(filterItems = viewModel.filterItems,
                 isFilterShow = viewModel.isFilterShow)
 
             SectionBanner(label = R.string.banner1)
@@ -116,7 +109,8 @@ fun HomeScreen(navController: NavController,
             Divider()
 
             SectionBanner(label = R.string.banner2)
-            SnackRoundedRow(snacks = viewModel.popularSnacks)
+            SnackRoundedRow(snacks = viewModel.popularSnacks,
+                onClickToDetail = navigateToSnackDetailScreen)
             Divider()
 
             SectionBanner(label = R.string.banner3)
@@ -129,7 +123,8 @@ fun HomeScreen(navController: NavController,
             Divider()
 
             SectionBanner(label = R.string.banner4)
-            SnackRoundedRow(snacks = viewModel.popularSnacks)
+            SnackRoundedRow(snacks = viewModel.popularSnacks,
+                onClickToDetail = navigateToSnackDetailScreen)
             Divider()
 
             SectionBanner(label = R.string.banner5)
@@ -157,12 +152,14 @@ fun HomeScreen(navController: NavController,
 
 @Composable
 fun SnackRoundedRow(snacks:List<Snack>,
-                    modifier: Modifier = Modifier){
+                    modifier: Modifier = Modifier,
+                    onClickToDetail: (id: String) -> Unit){
     LazyRow(
         modifier = modifier.padding(horizontal = 16.dp,vertical = 8.dp)
     ) {
         items(snacks){snack->
-            SnackRoundedItem(snack = snack)
+            SnackRoundedItem(snack = snack,
+                onClickToDetail = onClickToDetail)
             Spacer(modifier = modifier.width(16.dp))
         }
     }
@@ -170,8 +167,10 @@ fun SnackRoundedRow(snacks:List<Snack>,
 
 @Composable
 fun SnackRoundedItem(modifier: Modifier = Modifier,
-                     snack: Snack){
-    Column(modifier = modifier.fillMaxWidth(),
+                     snack: Snack,
+                     onClickToDetail:(id:String)->Unit = {}){
+    Column(modifier = modifier.fillMaxWidth()
+        .clickable { onClickToDetail(snack.id.toString()) },
         horizontalAlignment = Alignment.CenterHorizontally) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)

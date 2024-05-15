@@ -39,6 +39,7 @@ import com.example.jetsnackme.screen.home.FilterRowItem
 import com.example.jetsnackme.ui.theme.JetsnackMeTheme
 import com.example.jetsnackme.ui.theme.Typography
 
+
 @Composable
 fun FilterDialog(
     modifier: Modifier = Modifier,

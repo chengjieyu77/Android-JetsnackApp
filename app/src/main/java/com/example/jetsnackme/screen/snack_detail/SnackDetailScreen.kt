@@ -1,32 +1,24 @@
-package com.example.jetsnackme.screen.SnackDetail
+package com.example.jetsnackme.screen.snack_detail
 
-import android.health.connect.datatypes.units.Velocity
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -34,22 +26,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -73,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
@@ -83,8 +69,9 @@ import coil.request.ImageRequest
 import com.example.jetsnackme.R
 import com.example.jetsnackme.model.Snack
 import com.example.jetsnackme.navigation.JetsnackScreens
+import com.example.jetsnackme.screen.home.HomeScreenViewModel
 import com.example.jetsnackme.screen.home.SectionBanner
-import com.example.jetsnackme.screen.home.SnackCardRow
+import com.example.jetsnackme.screen.home.SnackRoundedRow
 import com.example.jetsnackme.ui.theme.ChangeStatusBarColor
 import com.example.jetsnackme.ui.theme.JetsnackMeTheme
 import com.example.jetsnackme.ui.theme.Ocean3
@@ -97,19 +84,34 @@ import com.example.jetsnackme.ui.theme.Typography
 fun SnackDetailScreen(navController: NavHostController,
                       modifier: Modifier = Modifier,
                       snackId: String?,
-                      viewModel: SnackDetailScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+                      viewModel: SnackDetailScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+                      homeScreenViewModel:HomeScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     Log.d("snack id from detail",snackId.toString())
     Log.d("current route",navController.currentBackStackEntry?.destination?.route.toString())
     val snack = viewModel.getSnackById(snackId)
     val scrollState = rememberScrollState()
     val lazyListState = rememberLazyListState()
     ChangeStatusBarColor(Color.Transparent)
-    val backgroundColorMaxHeight = 300.dp
+    val backgroundColorMaxHeight = 250.dp
     val backgroundColorMinHeight = 70.dp
     var backgroundColorHeight by remember{ mutableStateOf(backgroundColorMaxHeight) }
+
     val backgroundWhiteMaxHeight = 200.dp
     val backgroundWhiteMinHeight = 0.dp
     var backgroundWhiteHeight by remember { mutableStateOf(backgroundWhiteMaxHeight) }
+
+    val imageMaxSize = 300.dp
+    val imageMinSize = 150.dp
+    var imageSize by remember { mutableStateOf(imageMaxSize) }
+
+    val  imageOffsetCenterX = -50
+    val imageOffsetRightX = 200
+    var imageOffsetX by remember { mutableStateOf(imageOffsetCenterX) }
+
+    val imageTopPaddingMax = 120.dp
+    val imageTopPaddingMin = 30.dp
+    var imageTopPadding by remember { mutableStateOf(imageTopPaddingMax) }
+
     val canScroll = backgroundColorHeight == backgroundColorMinHeight && backgroundWhiteHeight == backgroundWhiteMinHeight
     val canScrollState = remember {
         mutableStateOf(canScroll)
@@ -128,17 +130,32 @@ fun SnackDetailScreen(navController: NavHostController,
                 if (backgroundColorHeight == backgroundColorMinHeight && available.y < 0 && backgroundWhiteHeight > backgroundWhiteMinHeight){
                     backgroundWhiteHeight = max(backgroundWhiteMinHeight, backgroundWhiteHeight+ deltaDp())
                 }
-                if (available.y<0 && canScrollState.value){
-
+                if (available.y<0 && imageSize > imageMinSize){
+                    imageSize = max(imageMinSize,imageSize+deltaDp())
                 }
+                if (available.y<0 && imageOffsetX > imageOffsetCenterX){
+                    imageOffsetX = kotlin.math.max(imageOffsetCenterX,imageOffsetX+available.y.toInt())
+                }
+                if ( available.y < 0 && imageTopPadding > imageTopPaddingMin){
+                    imageTopPadding = max(imageTopPaddingMin, imageTopPadding+ deltaDp())
+                }
+
                 // Handle scroll down
-                if (available.y > 0 && backgroundColorHeight < backgroundColorMaxHeight) {
+                if ( available.y > 0 && backgroundColorHeight < backgroundColorMaxHeight) {
                     backgroundColorHeight = min(backgroundColorMaxHeight, backgroundColorHeight + deltaDp())
                 }
                 if (backgroundColorHeight == backgroundColorMaxHeight && available.y > 0 && backgroundWhiteHeight < backgroundWhiteMaxHeight){
                     backgroundWhiteHeight = min(backgroundWhiteMaxHeight, backgroundWhiteHeight + deltaDp())
                 }
-
+                if (available.y>0 && imageSize < imageMaxSize){
+                    imageSize = min(imageMaxSize,imageSize+deltaDp())
+                }
+                if (available.y>0 && imageOffsetX < imageOffsetRightX){
+                    imageOffsetX = kotlin.math.max(imageOffsetRightX,imageOffsetX+available.y.toInt())
+                }
+                if (available.y > 0 && imageTopPadding < imageTopPaddingMax) {
+                    imageTopPadding = min(imageTopPaddingMax, imageTopPadding + deltaDp())
+                }
 
                 return Offset.Zero
             }
@@ -153,7 +170,12 @@ fun SnackDetailScreen(navController: NavHostController,
                 if (canScrollState.value) androidx.compose.ui.unit.Velocity.Zero else available
         }
     }
-    
+//    Column(
+//        modifier = modifier.verticalScroll(scrollState)
+//            .nestedScroll(nestedScrollConnectionCustom)
+//    ) {
+//
+//    }
     
     Scaffold(
         modifier = Modifier
@@ -171,18 +193,46 @@ fun SnackDetailScreen(navController: NavHostController,
                         TopAppBar(title = { },
                             modifier = modifier.background(brush = Brush.horizontalGradient(JetsnackMeTheme.colors.tornado1)),
                             navigationIcon = {
-                                DetailBackIconButton()
+                                DetailBackIconButton(){
+                                    navController.popBackStack()
+                                }
                             },
                             windowInsets = WindowInsets(0.dp),
                             colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                             //scrollBehavior = scrollBehavior
+
                         )
+
                     }
                     Box(modifier = modifier.height(backgroundWhiteHeight))
                     SnackNameAndPriceRow(snack = snack)
+
                 }
+
                 //Asyncimage
-            }
+                Box(
+                modifier = modifier
+                    .padding(imageTopPadding)
+                    .absoluteOffset {
+                                    IntOffset(0,0)
+                    }
+                    .align(Alignment.TopEnd),
+                //horizontalArrangement = Arrangement.Center
+                ) {
+
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(snack.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "${snack.name} image",
+                    modifier = modifier
+                        .clip(CircleShape)
+                        .requiredSize(imageSize),
+                        //.wrapContentSize(),
+                    contentScale = ContentScale.Crop)
+            }}
+
 
             },
         bottomBar = {
@@ -194,20 +244,26 @@ fun SnackDetailScreen(navController: NavHostController,
         LazyColumn(
             modifier
                 .padding(paddingValues)
-                .nestedScroll(nestedScrollConnectionCustom)
+                .nestedScroll(nestedScrollConnectionCustom),
+
                 ) {
                 item{
+//                    Box(modifier = modifier.height(backgroundWhiteHeight))
+//                    SnackNameAndPriceRow(snack = snack)
                     SnackDetailDetails()
+                    Spacer(modifier = modifier.height(16.dp))
                 }
                 item {
+                    Divider()
                     SectionBanner(label = R.string.banner6)
-//                    SnackCardRow(
-//                        cardBackgroundColorCollectionPicks = ,
-//                        snacks = ,
-//                        colorCount =
-//                    ) {snackId->
-//                        navController.navigate(JetsnackScreens.SnackDetailScreen.name + "/$snackId")
-//                    }
+                    SnackRoundedRow(snacks = homeScreenViewModel.picksSnacks){snackId->
+                        navController.navigate(JetsnackScreens.SnackDetailScreen.name+"/$snackId")
+                    }
+
+                    SectionBanner(label = R.string.banner2)
+                    SnackRoundedRow(snacks = homeScreenViewModel.popularSnacks){snackId->
+                        navController.navigate(JetsnackScreens.SnackDetailScreen.name+"/$snackId")
+                    }
                 }
 
 
@@ -260,6 +316,11 @@ fun SnackDetailScreen(navController: NavHostController,
 
 
 
+
+}
+
+@Composable
+fun DetailHeader(){
 
 }
 
@@ -409,18 +470,26 @@ fun ShrinkingCard(
 }
 
 @Composable
-fun SnackNameAndPriceRow(snack: Snack) {
+fun SnackNameAndPriceRow(
+    modifier: Modifier = Modifier,
+    snack: Snack) {
     Column {
-        Text(text = snack.name,
-            style = Typography.h4,
-            color = JetsnackMeTheme.colors.textPrimary)
-        Text(text = snack.tagline,
-            style = Typography.h5,
-            color = JetsnackMeTheme.colors.textSecondary.copy(0.5f))
-        Text(text = "$"+snack.price.toString(),
-            style = Typography.h5,
-            color = JetsnackMeTheme.colors.brand)
+        Column(
+            modifier = modifier.padding(start = 16.dp, top = 16.dp)
+        ) {
+            Text(text = snack.name,
+                style = Typography.h4,
+                color = JetsnackMeTheme.colors.textPrimary)
+            Text(text = snack.tagline,
+                style = Typography.h5,
+                color = JetsnackMeTheme.colors.textSecondary.copy(0.5f))
+            Text(text = "$"+snack.price.toString(),
+                style = Typography.h5,
+                color = JetsnackMeTheme.colors.brand)
+        }
+        Divider()
     }
+
 
 }
 

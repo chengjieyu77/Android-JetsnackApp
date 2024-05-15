@@ -72,6 +72,7 @@ private val DarkColorPalette = JetsnackColors(
 
 
 
+
 @Composable
 fun JetsnackMeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -200,3 +201,4 @@ fun ChangeStatusBarColor(statusBarColor: Color){
         }
     }
 }
+

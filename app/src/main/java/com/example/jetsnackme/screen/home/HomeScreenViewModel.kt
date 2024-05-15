@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.jetsnackme.R
 import com.example.jetsnackme.components.SortItem
+import com.example.jetsnackme.data.DataSource
 import com.example.jetsnackme.data.snacks
 import com.example.jetsnackme.ui.theme.JetsnackMeTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 class HomeScreenViewModel : ViewModel(){
     val picksSnacks = snacks.subList(0,13)
     val popularSnacks = snacks.subList(14,20)
+    val filterItems = DataSource.getFilterItems()
     private val _isFilterShow = mutableStateOf(false)
 
 

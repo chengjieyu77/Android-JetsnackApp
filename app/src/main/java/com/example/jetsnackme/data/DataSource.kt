@@ -1,6 +1,27 @@
 package com.example.jetsnackme.data
 
+import com.example.jetsnackme.R
+import com.example.jetsnackme.model.SearchCategory
 import com.example.jetsnackme.model.Snack
+
+object DataSource {
+    fun getSnacks():List<Snack> = snacks
+    fun getRecentSearches():List<String> = recentSearches
+    fun getPopularSearches():List<String> = popularSearches
+    fun getFilterItems():List<Int> = filterItems
+
+
+}
+val recentSearches = listOf("Cheese","Apple Sauce")
+val popularSearches = listOf("Organic","Gluten Free","Paleo","Vegan","Vegitarian","Whole30")
+
+val filterItems = listOf(
+    R.string.filter1,
+    R.string.filter2,
+    R.string.filter3,
+    R.string.filter4,
+    R.string.filter5
+)
 
 val snacks = listOf(
     Snack(
@@ -194,4 +215,30 @@ val snacks = listOf(
         price = 2.99
     )
 
+)
+
+val searchCategories = listOf(
+    SearchCategory(label = R.string.searchCategories1,
+        imageUrl = "https://source.unsplash.com/UsSdMZ78Q3E" ),
+    SearchCategory(label = R.string.searchCategories2,
+        imageUrl ="https://source.unsplash.com/SfP1PtM9Qa8" ),
+    SearchCategory(label = R.string.searchCategories3,
+        imageUrl = "https://source.unsplash.com/_jk8KIyN_uA" ),
+    SearchCategory(label = R.string.searchCategories4,
+        imageUrl =  "https://source.unsplash.com/UsSdMZ78Q3E" ),
+)
+
+val searchLifestyles = listOf(
+    SearchCategory(label = R.string.searchLifestyles1,
+        imageUrl = "https://source.unsplash.com/7meCnGCJ5Ms"),
+    SearchCategory(label = R.string.searchLifestyles2,
+        imageUrl = "https://source.unsplash.com/m741tj4Cz7M"),
+    SearchCategory(label = R.string.searchLifestyles3,
+        imageUrl = "https://source.unsplash.com/dt5-8tThZKg"),
+    SearchCategory(label = R.string.searchLifestyles4,
+        imageUrl = "https://source.unsplash.com/ReXxkS1m1H0"),
+    SearchCategory(label = R.string.searchLifestyles5,
+        imageUrl =  "https://source.unsplash.com/IGfIGP5ONV0"),
+    SearchCategory(label = R.string.searchLifestyles6,
+        imageUrl = "https://source.unsplash.com/9MzCd76xLGk"),
 )
