@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
@@ -46,9 +47,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.jetsnackme.R
@@ -64,11 +67,12 @@ import com.example.jetsnackme.ui.theme.Rose8
 import com.example.jetsnackme.ui.theme.Shapes
 import com.example.jetsnackme.ui.theme.Typography
 
+@Preview
 @Composable
-fun HomeScreen(navController: NavController,
+fun HomeScreen(navController: NavController = rememberNavController(),
                modifier: Modifier = Modifier,
                viewModel: HomeScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-               navigateToSnackDetailScreen:(id:String)->Unit){
+               navigateToSnackDetailScreen:(id:String)->Unit = {}){
     val scrollState = rememberScrollState()
 
     val cardBackgroundColorCollectionPicks = listOf(
@@ -90,8 +94,9 @@ fun HomeScreen(navController: NavController,
     )
 
    Scaffold(
+       modifier = modifier.statusBarsPadding(),
        topBar = { DeliveryToTopBar() },
-       contentWindowInsets = WindowInsets(top = 0.dp)
+       containerColor = Color.Transparent
    ) {contentPadding->
         Column(modifier = Modifier
             .padding(top = contentPadding.calculateTopPadding())
@@ -169,7 +174,8 @@ fun SnackRoundedRow(snacks:List<Snack>,
 fun SnackRoundedItem(modifier: Modifier = Modifier,
                      snack: Snack,
                      onClickToDetail:(id:String)->Unit = {}){
-    Column(modifier = modifier.fillMaxWidth()
+    Column(modifier = modifier
+        .fillMaxWidth()
         .clickable { onClickToDetail(snack.id.toString()) },
         horizontalAlignment = Alignment.CenterHorizontally) {
         AsyncImage(
@@ -322,9 +328,10 @@ fun FilterRow(filterItems:List<Int>,
             item {
                 Icon(painterResource(id = R.drawable.ic_filter) ,
                         contentDescription = "icon filter",
-                        modifier = Modifier.coloredBorder()
+                        modifier = Modifier
+                            .coloredBorder()
                             .clickable {
-                                       isFilterShow.value = true
+                                isFilterShow.value = true
                             },
                         tint = JetsnackMeTheme.colors.brand)
 

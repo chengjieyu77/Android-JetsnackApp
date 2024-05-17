@@ -72,4 +72,7 @@
     <string name="searches1">Recent searches</string>
     <string name="searches2">Popular searches</string>
 
+<!--    cart page-->
+    <string name="banner7">Inspired by your cart</string>
+
 </resources>

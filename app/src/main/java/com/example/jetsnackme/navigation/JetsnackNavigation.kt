@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
@@ -41,11 +42,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.jetsnackme.R
 import com.example.jetsnackme.model.BottomNav
-import com.example.jetsnackme.screen.CartScreen
+import com.example.jetsnackme.screen.cart.CartScreen
 import com.example.jetsnackme.screen.home.HomeScreen
 import com.example.jetsnackme.screen.ProfileScreen
 import com.example.jetsnackme.screen.search.SearchScreen
 import com.example.jetsnackme.screen.snack_detail.SnackDetailScreen
+import com.example.jetsnackme.screen.snack_detail.SnackDetailScreenNew
 import com.example.jetsnackme.ui.theme.JetsnackMeTheme
 import com.example.jetsnackme.ui.theme.Shapes
 import com.example.jetsnackme.ui.theme.Typography
@@ -167,7 +169,8 @@ fun JetsnackNavigation(){
 
 
 
-            }
+            },
+        contentWindowInsets = WindowInsets(0.dp)
 
 
     ) { innerPadding ->

@@ -1,6 +1,7 @@
 package com.example.jetsnackme.data
 
 import com.example.jetsnackme.R
+import com.example.jetsnackme.model.Order
 import com.example.jetsnackme.model.SearchCategory
 import com.example.jetsnackme.model.Snack
 
@@ -9,9 +10,66 @@ object DataSource {
     fun getRecentSearches():List<String> = recentSearches
     fun getPopularSearches():List<String> = popularSearches
     fun getFilterItems():List<Int> = filterItems
-
+    fun getCartItems():List<Snack> = cartItems
+    fun getFakeOrder():List<Order> = cartFakeOrder
 
 }
+val cartFakeOrder = listOf(
+    Order(
+        snack = Snack(
+            id = 3,
+            name = "Eclair",
+            price = 2.99,
+            imageUrl = "https://source.unsplash.com/-LojFX9NfPY",
+            tagline = "A tag line"
+        ),
+        quantity = 2
+    ),
+    Order(
+        snack = Snack(
+            id = 7,
+            name = "Ice Cream Sandwich",
+            price = 2.99,
+            imageUrl = "https://source.unsplash.com/YgYJsFDd4AU",
+            tagline = "A tag line"
+        ),
+        quantity = 3
+    ),
+    Order(
+        snack = Snack(
+            id = 9,
+            name = "KitKat",
+            price = 2.99,
+            imageUrl = "https://source.unsplash.com/yb16pT5F_jE",
+            tagline = "A tag line"
+        ),
+        quantity = 1
+    ),
+)
+val cartItems = listOf(
+    Snack(
+        id = 3,
+        name = "Eclair",
+        price = 2.99,
+        imageUrl = "https://source.unsplash.com/-LojFX9NfPY",
+        tagline = "A tag line"
+    ),
+    Snack(
+        id = 7,
+        name = "Ice Cream Sandwich",
+        price = 2.99,
+        imageUrl = "https://source.unsplash.com/YgYJsFDd4AU",
+        tagline = "A tag line"
+    ),
+    Snack(
+        id = 9,
+        name = "KitKat",
+        price = 2.99,
+        imageUrl = "https://source.unsplash.com/yb16pT5F_jE",
+        tagline = "A tag line"
+    )
+
+)
 val recentSearches = listOf("Cheese","Apple Sauce")
 val popularSearches = listOf("Organic","Gluten Free","Paleo","Vegan","Vegitarian","Whole30")
 

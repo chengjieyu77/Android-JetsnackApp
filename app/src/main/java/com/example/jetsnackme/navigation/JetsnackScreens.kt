@@ -5,5 +5,6 @@ enum class JetsnackScreens {
     SearchScreen,
     CartScreen,
     ProfileScreen,
-    SnackDetailScreen
+    SnackDetailScreen,
+    SnackDetailScreenNew,
 }

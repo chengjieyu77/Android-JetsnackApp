@@ -1,6 +1,7 @@
 package com.example.jetsnackme.screen.snack_detail
 
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -58,11 +61,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -79,7 +84,7 @@ import com.example.jetsnackme.ui.theme.Shadow3
 import com.example.jetsnackme.ui.theme.Shapes
 import com.example.jetsnackme.ui.theme.Typography
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SnackDetailScreen(navController: NavHostController,
                       modifier: Modifier = Modifier,
@@ -90,10 +95,11 @@ fun SnackDetailScreen(navController: NavHostController,
     Log.d("current route",navController.currentBackStackEntry?.destination?.route.toString())
     val snack = viewModel.getSnackById(snackId)
     val scrollState = rememberScrollState()
+    val scrollStateHeader = rememberScrollState()
     val lazyListState = rememberLazyListState()
     ChangeStatusBarColor(Color.Transparent)
     val backgroundColorMaxHeight = 250.dp
-    val backgroundColorMinHeight = 70.dp
+    val backgroundColorMinHeight = 100.dp
     var backgroundColorHeight by remember{ mutableStateOf(backgroundColorMaxHeight) }
 
     val backgroundWhiteMaxHeight = 200.dp
@@ -170,10 +176,38 @@ fun SnackDetailScreen(navController: NavHostController,
                 if (canScrollState.value) androidx.compose.ui.unit.Velocity.Zero else available
         }
     }
-//    Column(
-//        modifier = modifier.verticalScroll(scrollState)
+//    LazyColumn(
+//        modifier = modifier
+//            //.verticalScroll(scrollState)
 //            .nestedScroll(nestedScrollConnectionCustom)
+//
 //    ) {
+//        stickyHeader {
+//            DetailHeader(backgroundColorHeight = backgroundColorHeight,
+//                backgroundWhiteHeight = backgroundWhiteHeight,
+//                imageTopPadding = imageTopPadding,
+//                imageSize = imageSize,
+//                snack = snack,
+//                modifier = modifier)
+//                    //.verticalScroll(scrollStateHeader)
+//                    //.nestedScroll(nestedScrollConnectionCustom))
+//        }
+//        item {
+//            SnackDetailDetails()
+//            Spacer(modifier = modifier.height(16.dp))
+//
+//            SectionBanner(label = R.string.banner6)
+//            SnackRoundedRow(snacks = homeScreenViewModel.picksSnacks){snackId->
+//                navController.navigate(JetsnackScreens.SnackDetailScreen.name+"/$snackId")
+//            }
+//
+//            SectionBanner(label = R.string.banner2)
+//            SnackRoundedRow(snacks = homeScreenViewModel.popularSnacks){snackId->
+//                navController.navigate(JetsnackScreens.SnackDetailScreen.name+"/$snackId")
+//            }
+//        }
+//
+//
 //
 //    }
     
@@ -191,7 +225,8 @@ fun SnackDetailScreen(navController: NavHostController,
                             .height(backgroundColorHeight)
                     ) {
                         TopAppBar(title = { },
-                            modifier = modifier.background(brush = Brush.horizontalGradient(JetsnackMeTheme.colors.tornado1)),
+                            modifier = modifier.background(brush = Brush.horizontalGradient(JetsnackMeTheme.colors.tornado1))
+                                .statusBarsPadding(),
                             navigationIcon = {
                                 DetailBackIconButton(){
                                     navController.popBackStack()
@@ -320,28 +355,65 @@ fun SnackDetailScreen(navController: NavHostController,
 }
 
 @Composable
-fun DetailHeader(){
+fun DetailHeader(modifier: Modifier = Modifier,
+                 backgroundColorHeight:Dp,
+                 backgroundWhiteHeight:Dp,
+                 imageTopPadding:Dp,
+                 imageSize:Dp,
+                 snack: Snack
+                 ){
+    Box(modifier = modifier){
+        DetailBackIconButton(modifier = modifier
+            .align(Alignment.TopStart)
+            .zIndex(1f))
+        Column(modifier = modifier.fillMaxWidth()) {
+            Box(modifier = modifier
+                .height(backgroundColorHeight)
+                .fillMaxWidth()
+                .background(Brush.horizontalGradient(JetsnackMeTheme.colors.tornado1)))
+            Box(modifier = modifier
+                .height(backgroundWhiteHeight)
+                .fillMaxWidth()
+                .background(JetsnackMeTheme.colors.uiBackground))
+            SnackNameAndPriceRow(snack = snack)
+            //                //Asyncimage
 
-}
+        }
+        Box(
+            modifier = modifier
+                .padding(imageTopPadding)
+                .absoluteOffset { IntOffset(0, 0) }
+                .align(Alignment.TopEnd)
+            //horizontalArrangement = Arrangement.Center
+        ) {
+
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(snack.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "${snack.name} image",
+                modifier = modifier
+                    .clip(CircleShape)
+                    .requiredSize(imageSize),
+                //.wrapContentSize(),
+                contentScale = ContentScale.Crop)
+        }
+        }
+
+
+    }
+
 
 @Composable
 fun AddToCartRow(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    brushedIconModifier: Modifier = Modifier.brushedIconModifier()
 ){
     var count:Int by remember {
         mutableStateOf(1)
     }
-    val brushedIconModifier = Modifier
-        .graphicsLayer(alpha = 0.9f)
-        .drawWithCache {
-            onDrawWithContent {
-                drawContent()
-                drawCircle(
-                    brush = Brush.horizontalGradient(listOf(Ocean3, Shadow3)),
-                    blendMode = BlendMode.SrcAtop
-                )
-            }
-        }
+
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -401,7 +473,7 @@ fun DetailBackIconButton(
     modifier: Modifier = Modifier,
     onClick:()->Unit = {}
 ){
-    IconButton(onClick = onClick,
+    IconButton(onClick = onClick,modifier = modifier
         ) {
         Box(modifier = modifier
             .size(60.dp)
@@ -538,4 +610,20 @@ fun Modifier.detailCardModifier():Modifier{
         .height(300.dp)
 
     return this then detailCardModifier
+}
+
+@Composable
+fun Modifier.brushedIconModifier():Modifier{
+    val brushedIconModifier = Modifier
+        .graphicsLayer(alpha = 0.9f)
+        .drawWithCache {
+            onDrawWithContent {
+                drawContent()
+                drawCircle(
+                    brush = Brush.horizontalGradient(listOf(Ocean3, Shadow3)),
+                    blendMode = BlendMode.SrcAtop
+                )
+            }
+        }
+    return this then brushedIconModifier
 }

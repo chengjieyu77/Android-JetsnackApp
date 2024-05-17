@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +33,7 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -64,7 +66,11 @@ fun DeliveryToTopBar(){
                 contentDescription = "arrow down icon")
 
         }},
-        windowInsets = WindowInsets(top = 0.dp)
+        windowInsets = WindowInsets(top = 0.dp),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent
+        )
         )
 }
 
@@ -102,8 +108,9 @@ fun SearchTopBar(
     searchInput:MutableState<String>,
     modifier: Modifier = Modifier,
     imeAction:ImeAction = ImeAction.Search,
-    onAction:KeyboardActions = KeyboardActions.Default,
+    onAction:()->Unit,
     isSearchBarFocused:MutableState<Boolean>,
+    isSearchingByTextField:Boolean = false,
     onBackIconClicked:()->Unit = {}
 ){
     Surface(
@@ -134,11 +141,18 @@ fun SearchTopBar(
 
                           }
             },
+            trailingIcon = {
+                           if (isSearchingByTextField){
+                               CircularProgressIndicator()
+                           }
+            },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = imeAction
             ),
-            keyboardActions = onAction,
+            keyboardActions = KeyboardActions(
+                onSearch = {onAction()}
+            ),
             singleLine = true,
             shape = RoundedCornerShape(50.dp),
             colors = TextFieldDefaults.colors(
