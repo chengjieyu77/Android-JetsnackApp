@@ -52,6 +52,8 @@ android {
 }
 
 dependencies {
+    //constraint layout
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     //system ui controller
     //implementation("com.google.accompanist:accompanist-systemuicontroller:x.y.z")
     //bottom navigation

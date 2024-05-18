@@ -57,6 +57,7 @@ import coil.request.ImageRequest
 import com.example.jetsnackme.R
 import com.example.jetsnackme.components.DeliveryToTopBar
 import com.example.jetsnackme.components.FilterDialog
+import com.example.jetsnackme.components.ImageFromInternet
 import com.example.jetsnackme.model.Snack
 import com.example.jetsnackme.ui.theme.JetsnackMeTheme
 import com.example.jetsnackme.ui.theme.Lavender3
@@ -178,18 +179,12 @@ fun SnackRoundedItem(modifier: Modifier = Modifier,
         .fillMaxWidth()
         .clickable { onClickToDetail(snack.id.toString()) },
         horizontalAlignment = Alignment.CenterHorizontally) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(snack.imageUrl)
-                .crossfade(true)
-                .build(),
-            contentDescription = "${snack.name} image",
-            modifier = modifier
-                .clip(CircleShape)
-                .size(112.dp)
-                .wrapContentSize()
-                .shadow(elevation = 10.dp, shape = CircleShape),
-            contentScale = ContentScale.Crop)
+        ImageFromInternet(
+            modifier = modifier,
+            imageUrl = snack.imageUrl,
+            size = 112.dp,
+            contentDescription = snack.name)
+
         Text(text = snack.name,
             style = Typography.subtitle1,
             color = JetsnackMeTheme.colors.textSecondary,
@@ -273,17 +268,9 @@ fun SnackCardItem(modifier: Modifier = Modifier,
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(snack.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "${snack.name} image",
-                modifier = modifier
-                    .clip(CircleShape)
-                    .size(112.dp)
-                    .wrapContentSize(),
-                contentScale = ContentScale.Crop)
+            ImageFromInternet(imageUrl = snack.imageUrl,
+                size =112.dp ,
+                contentDescription = snack.name)
         }
 
 

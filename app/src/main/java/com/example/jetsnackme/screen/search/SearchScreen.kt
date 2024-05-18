@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material3.Card
@@ -31,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +49,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.jetsnackme.R
+import com.example.jetsnackme.components.ImageFromInternet
 import com.example.jetsnackme.components.SearchTopBar
 import com.example.jetsnackme.data.DataSource
 import com.example.jetsnackme.data.searchCategories
@@ -58,6 +62,8 @@ import com.example.jetsnackme.screen.home.FilterRow
 import com.example.jetsnackme.ui.theme.JetsnackMeTheme
 import com.example.jetsnackme.ui.theme.Shapes
 import com.example.jetsnackme.ui.theme.Typography
+import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 @Composable
 fun SearchScreen(navController: NavController,
@@ -77,12 +83,11 @@ fun SearchScreen(navController: NavController,
     val isSearchingByTextField = rememberSaveable {
         mutableStateOf(false)
     }
-
-    LaunchedEffect(key1 = viewModel.searchInput) {
-        isSearchingByTextField.value = true
-        SearchRepo.search(viewModel.searchInput.value)
-        isSearchingByTextField.value = false
+    val isSearchingFinished = rememberSaveable {
+        mutableStateOf(false)
     }
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
 
     Scaffold(
@@ -90,30 +95,37 @@ fun SearchScreen(navController: NavController,
         topBar = { SearchTopBar(
             searchInput = viewModel.searchInput,
             isSearchBarFocused = isSearchBarFocused,
-            isSearchingByTextField = isSearchingByTextField.value,
+            isSearchingByTextField = isSearchingByTextField,
             onAction = {
-                viewModel.onSearchItems(viewModel.searchInput.value)
+                //viewModel.onSearchItems(viewModel.searchInput.value)
+                scope.launch {
+                    viewModel.onSearch(viewModel.searchInput.value)
+                }
+
                 isSearching.value = true
                 isSearchBarFocused.value = true
             }){
             isSearching.value = false
             viewModel.searchInput.value = ""
-        }}
+        }},
+        containerColor = Color.Transparent
     ) {
-        LazyColumn(modifier = modifier.padding(it)) {
+        Column(modifier = modifier
+            .padding(top = it.calculateTopPadding())
+            .verticalScroll(scrollState)) {
             if (!isSearchBarFocused.value){
-                item {
+
                     SearchBannerLetter(label = R.string.searchBanner1)
                     SearchCardItemGroup(searchTopicList = searchCategories,
                         backgroundColor = JetsnackMeTheme.colors.gradient2_2)
                     SearchBannerLetter(label = R.string.searchBanner2)
                     SearchCardItemGroup(searchTopicList = searchLifestyles,
                         backgroundColor = JetsnackMeTheme.colors.gradient2_3)
-                }
+
             }
 
             if (isSearchBarFocused.value && !isSearching.value){
-                item {
+
                     SearchesList(recentSearches = DataSource.getRecentSearches(),
                         popularSearches = DataSource.getPopularSearches()){searchItem->
                         viewModel.searchInput.value = searchItem
@@ -121,25 +133,36 @@ fun SearchScreen(navController: NavController,
                         //go on search this value
                         viewModel.onSearchItems(searchItem)
                     }
-                }
+
             }
 
             if (isSearchBarFocused.value && isSearching.value){
-                item {
-                    FilterRow(filterItems =viewModel.filterItems ,
+                FilterRow(filterItems =viewModel.filterItems ,
                         isFilterShow = isFilterShown,
                         modifier = modifier.padding(top = 16.dp))
-                    Text(text = "${viewModel.searchedItems.size} items",
+
+                LaunchedEffect(key1 = viewModel.searchInput.value) {
+                    isSearchingByTextField.value = true
+                    isSearchingFinished.value = false
+                    viewModel.onSearch(viewModel.searchInput.value)
+                    isSearchingByTextField.value = false
+                    isSearchingFinished.value = true
+                }
+
+                if (isSearchingFinished.value){
+                    Text(text = "${viewModel.searchedItemsUsingLaunchedEffect.size} items",
                         style = Typography.h6,
                         color = JetsnackMeTheme.colors.brand,
                         modifier = modifier.padding(start = 16.dp, bottom = 16.dp))
-                    viewModel.searchedItems.forEach { snack ->
+
+                    viewModel.searchedItemsUsingLaunchedEffect.forEach { snack ->
                         SearchingItem(snack = snack,modifier = modifier.padding(horizontal = 16.dp))
                         Divider(modifier = modifier.padding(16.dp))
-
                     }
-
                 }
+
+
+
             }
 
 
@@ -157,17 +180,8 @@ fun SearchingItem(snack: Snack,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box{
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(snack.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription =  "${snack.name} image",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .requiredSize(100.dp),
-                //.wrapContentSize(),
-                contentScale = ContentScale.Crop)
+            ImageFromInternet(imageUrl = snack.imageUrl,
+                size = 100.dp, contentDescription =snack.name )
         }
         Column(modifier = Modifier.padding(start = 8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -175,7 +189,7 @@ fun SearchingItem(snack: Snack,
                 style = Typography.subtitle1)
             Text(text = snack.tagline, style = Typography.body2,
                 color = JetsnackMeTheme.colors.textSecondary.copy(0.5f))
-            Text(text = "$${snack.price}",
+            Text(text = "$${snack.price.toBigDecimal().divide(BigDecimal(100))}",
                 style = Typography.h6,
                 color = JetsnackMeTheme.colors.brand)
         }
@@ -278,6 +292,10 @@ fun SearchCardItem(searchCategory: SearchCategory,
                     .padding(start = 8.dp))
 
             Box(modifier = modifier.offset(x=20.dp)){
+//                ImageFromInternet(imageUrl = searchCategory.imageUrl,
+//                    size = 140.dp,
+//                    contentDescription =stringResource(id = searchCategory.label) )
+
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(searchCategory.imageUrl)
@@ -291,7 +309,8 @@ fun SearchCardItem(searchCategory: SearchCategory,
                     contentScale = ContentScale.Crop)
             }
 
+            }
+
 
         }
     }
-}

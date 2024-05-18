@@ -110,7 +110,7 @@ fun SearchTopBar(
     imeAction:ImeAction = ImeAction.Search,
     onAction:()->Unit,
     isSearchBarFocused:MutableState<Boolean>,
-    isSearchingByTextField:Boolean = false,
+    isSearchingByTextField:MutableState<Boolean>,
     onBackIconClicked:()->Unit = {}
 ){
     Surface(
@@ -142,7 +142,7 @@ fun SearchTopBar(
                           }
             },
             trailingIcon = {
-                           if (isSearchingByTextField){
+                           if (isSearchingByTextField.value){
                                CircularProgressIndicator()
                            }
             },

@@ -8,26 +8,29 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.ViewModel
 import com.example.jetsnackme.data.DataSource
 import com.example.jetsnackme.model.Snack
+import com.example.jetsnackme.repository.SearchRepo
 import java.util.Locale
 
 class SearchScreenViewModel:ViewModel(){
-    val allSnacks = DataSource.getSnacks()
+    private val allSnacks = DataSource.getSnacks()
     val filterItems = DataSource.getFilterItems()
     private val _searchInput = mutableStateOf("")
     private var _searchedItems = mutableSetOf<Snack>()
+    private var _searchedItemsUsingLaunchedEffect = mutableListOf<Snack>()
     val searchInput: MutableState<String>
         get() = _searchInput
     val searchedItems:MutableSet<Snack>
         get() = _searchedItems
+
+    val searchedItemsUsingLaunchedEffect : MutableList<Snack>
+        get() = _searchedItemsUsingLaunchedEffect
     fun onSearchItems(searchItem:String){
-//         = allSnacks.filter { snack->
+//        allSnacks.filter { snack->
 //            snack.name.lowercase(Locale.ROOT).contains(searchItem.lowercase())
 //        }
-
-        for (snack in allSnacks){
+        for (snack in searchedItems){
             if (snack.name.lowercase().contains(searchItem.lowercase())){
                 //_searchedItems= _searchedItems.clear()
-
                 _searchedItems.add(snack)
 
             }else{
@@ -36,6 +39,10 @@ class SearchScreenViewModel:ViewModel(){
         }
 
 
+    }
+
+    suspend fun onSearch(query:String){
+        _searchedItemsUsingLaunchedEffect = SearchRepo.search(query).toMutableList()
     }
 
 }
